@@ -214,9 +214,9 @@ export default function Login() {
                  Đăng ký
             </Link>
           </p>
-          <a href="/fogot" className="text-sm font-medium text-zinc-900 dark:text-zinc-50 underline underline-offset-4 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">
+          <Link href="/forgotpassword" className="text-sm font-medium text-zinc-900 dark:text-zinc-50 underline underline-offset-4 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">
            Quên mật khẩu?
-          </a>
+          </Link>
         </div>
 
       </div>

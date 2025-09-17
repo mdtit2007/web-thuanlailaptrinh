@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import { useTheme } from 'next-themes';
+import Link from 'next/link';
 
 // Icons from lucide-react, commonly used with shadcn/ui
 const MenuIcon = ({ className }: { className?: string }) => (
@@ -144,9 +145,9 @@ const Header = () => {
 
           {/* CTA Button, Theme Toggle and Mobile Menu Toggle */}
           <div className="flex items-center gap-4">
-             <a href="#" className="hidden sm:inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors duration-300">
+             <Link href="/login" className="hidden sm:inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors duration-300">
                 Đăng Nhập
-             </a>
+             </Link>
 
             {/* Theme Toggle Button */}
             <button
