@@ -1,8 +1,17 @@
-
-
+import React from "react";
+import Homee from "./Homee/page"
+import Narbar from "./components/Narbar"
+import Contact from "./components/contact"
+import Membership from "./membership/page"
+import Courses from "./components/courses"
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      </div>
+    <section>
+      <Narbar />
+      <Homee />
+      <Courses />
+      <Membership />
+      <Contact />
+      </section>
   );
 }

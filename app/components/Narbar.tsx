@@ -105,41 +105,61 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
-  // Navigation links data
+  // Navigation links data with section IDs
   const navLinks = [
-    { href: "Home", label: "Trang Chủ" },
-    { href: "#", label: "Khoá Học" },
-    { href: "#", label: "Đăng Ký Thành Viên" },
-    { href: "#", label: "Liên Hệ" },
+    { href: "#home", label: "Trang Chủ", sectionId: "home" },
+    { href: "#courses", label: "Khoá Học", sectionId: "courses" },
+    { href: "#membership", label: "Đăng Ký Thành Viên", sectionId: "membership" },
+    { href: "#contact", label: "Liên Hệ", sectionId: "contact" },
   ];
+
+  // Function to handle smooth scrolling
+  const handleScrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerHeight = 64; // Height of the sticky header (h-16 = 64px)
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - headerHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+    // Close mobile menu after clicking a link
+    setIsMenuOpen(false);
+  };
 
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   return (
-    <header className="bg-white/80 dark:bg-black/80 backdrop-blur-sm sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700">
+    <section className="bg-white/80 dark:bg-black/80 backdrop-blur-sm sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
           {/* Logo Section */}
           <div className="flex-shrink-0">
-            <a href="#" className="flex items-center gap-2">
+            <button 
+              onClick={() => handleScrollToSection('home')}
+              className="flex items-center gap-2 focus:outline-none"
+            >
                <MountainIcon className="h-6 w-6 text-gray-900 dark:text-white" />
               <span className="text-lg font-semibold text-gray-900 dark:text-white">T-Team</span>
-            </a>
+            </button>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
-              <a 
+              <button 
                 key={link.label} 
-                href={link.href} 
-                className="text-sm font-medium text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-300"
+                onClick={() => handleScrollToSection(link.sectionId)}
+                className="text-sm font-medium text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-300 focus:outline-none focus:text-gray-900 dark:focus:text-white cursor-pointer "
               >
                 {link.label}
-              </a>
+              </button>
             ))}
           </nav>
 
@@ -183,21 +203,21 @@ const Header = () => {
         <div className="md:hidden border-t border-gray-200 dark:border-gray-700" id="mobile-menu">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navLinks.map((link) => (
-              <a
+              <button
                 key={link.label}
-                href={link.href}
-                className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300"
+                onClick={() => handleScrollToSection(link.sectionId)}
+                className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300 w-full text-left focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800"
               >
                 {link.label}
-              </a>
+              </button>
             ))}
-             <a href="#" className="w-full mt-2 text-center items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 block transition-colors duration-300">
+             <Link href="/login" className="w-full mt-2 text-center items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 block transition-colors duration-300">
                 Đăng Nhập
-             </a>
+             </Link>
           </div>
         </div>
       )}
-    </header>
+    </section>
   );
 };
 
