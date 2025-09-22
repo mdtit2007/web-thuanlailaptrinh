@@ -1,6 +1,7 @@
 "use client"
 import { ArrowRight, ExternalLink, Eye, Heart } from 'lucide-react'
 import React, { useState } from 'react'
+import { useScrollAnimation, useStaggeredAnimation } from '../hooks/useScrollAnimation'
 
 const fillter = [
   { id: "all", label: "Tất Cả Khoá Học" },
@@ -38,6 +39,11 @@ const project = [
 function Portfolios() {
   const [activefilter, setActivefilter] = useState("all");
   
+  const { elementRef: headerRef, isVisible: headerVisible } = useScrollAnimation({ delay: 200 });
+  const { elementRef: filtersRef, isVisible: filtersVisible } = useScrollAnimation({ delay: 400 });
+  const { containerRef: projectsRef, visibleItems } = useStaggeredAnimation(project.length, 200);
+  const { elementRef: ctaRef, isVisible: ctaVisible } = useScrollAnimation({ delay: 300 });
+  
   const filterproject = activefilter === "all"
     ? project
     : project.filter((project) => project.type === activefilter);
@@ -47,13 +53,30 @@ function Portfolios() {
       id='courses' 
       className='py-20 bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 relative overflow-hidden'
     >
+      <style>{`
+        @keyframes slideInUp {
+          from { opacity: 0; transform: translateY(50px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInScale {
+          from { opacity: 0; transform: scale(0.9) translateY(20px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-slide-in-up { animation: slideInUp 0.8s ease-out forwards; }
+        .animate-fade-in-scale { animation: fadeInScale 0.6s ease-out forwards; }
+      `}</style>
+      
       {/* Background Decorations */}
-      <div className='absolute top-1/4 left-0 w-72 h-72 bg-gradient-to-r from-purple-200 to-pink-200 dark:from-purple-500 dark:to-pink-500 rounded-full filter blur-3xl opacity-30'></div>
-      <div className='absolute bottom-1/4 right-0 w-72 h-72 bg-gradient-to-l from-blue-200 to-cyan-200 dark:from-blue-500 dark:to-cyan-500 rounded-full filter blur-3xl opacity-30'></div>
+      <div className='absolute top-1/4 left-0 w-72 h-72 bg-gradient-to-r from-purple-200 to-pink-200 dark:from-purple-500 dark:to-pink-500 rounded-full filter blur-3xl opacity-30 animate-pulse'></div>
+      <div className='absolute bottom-1/4 right-0 w-72 h-72 bg-gradient-to-l from-blue-200 to-cyan-200 dark:from-blue-500 dark:to-cyan-500 rounded-full filter blur-3xl opacity-30 animate-pulse delay-1000'></div>
 
       <div className='max-w-7xl mx-auto px-4 sm:px-8 relative z-10'>
-        <div className='text-center mb-16'>
-        
+        <div 
+          ref={headerRef as React.RefObject<HTMLDivElement>}
+          className={`text-center mb-16 transition-all duration-800 ease-out ${
+            headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
           <h2 className='text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6'>
             Khoá Học
           </h2>
@@ -64,13 +87,18 @@ function Portfolios() {
         </div>
 
         {/* Filter Buttons */}
-        <div className='flex flex-wrap justify-center gap-4 mb-12'>
+        <div 
+          ref={filtersRef as React.RefObject<HTMLDivElement>}
+          className={`flex flex-wrap justify-center gap-4 mb-12 transition-all duration-800 ease-out ${
+            filtersVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
           {fillter.map((fillter) => {
             return (
               <button 
                 key={fillter.id}
                 onClick={() => setActivefilter(fillter.id)}
-                className={`cursor-pointer px-6 py-3 rounded-2xl font-semibold transition-all duration-300 ${
+                className={`cursor-pointer px-6 py-3 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 ${
                   activefilter === fillter.id 
                     ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105'
                     : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-500'
@@ -83,12 +111,22 @@ function Portfolios() {
         </div>
 
         {/* Project Grid */}
-        <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-8'>
-          {filterproject.map((project) => {
+        <div 
+          ref={projectsRef as React.RefObject<HTMLDivElement>}
+          className='grid md:grid-cols-2 lg:grid-cols-3 gap-8'
+        >
+          {filterproject.map((project, index) => {
             return (
               <div 
                 key={project.id}
-                className='group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-500 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2'
+                className={`group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-500 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 ${
+                  visibleItems.has(index) 
+                    ? 'opacity-100 translate-y-0 scale-100' 
+                    : 'opacity-0 translate-y-8 scale-95'
+                }`}
+                style={{
+                  transitionDelay: visibleItems.has(index) ? `${index * 100}ms` : '0ms'
+                }}
               >
                 <div className='relative overflow-hidden'>
                   <img 
@@ -151,7 +189,12 @@ function Portfolios() {
         </div>
 
         {/* CTA Section */}
-        <div className='text-center mt-16'>
+        <div 
+          ref={ctaRef as React.RefObject<HTMLDivElement>}
+          className={`text-center mt-16 transition-all duration-800 ease-out ${
+            ctaVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
+          }`}
+        >
           <div className='bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-800 dark:to-pink-800 dark:border dark:border-purple-600 rounded-3xl p-8 text-white relative overflow-hidden'>
             <div className='absolute inset-0 bg-black/10'></div>
             <div className='relative z-10'>
@@ -161,10 +204,10 @@ function Portfolios() {
                 View our complete portfolio or start a project today
               </p>
               <div className='flex flex-col sm:flex-row gap-4 justify-center'>
-                <button className='bg-white text-purple-600 dark:text-purple-800 hover:bg-gray-100 px-6 py-3 rounded-xl font-semibold transition-colors duration-300 whitespace-nowrap'>
+                <button className='bg-white text-purple-600 dark:text-purple-800 hover:bg-gray-100 px-6 py-3 rounded-xl font-semibold transition-all duration-300 whitespace-nowrap hover:scale-105'>
                   View All Projects
                 </button>
-                <button className='border border-purple-600 dark:border-purple-400 text-white hover:bg-white hover:text-purple-600 dark:hover:text-purple-800 px-6 py-3 rounded-xl font-semibold transition-colors duration-300 whitespace-nowrap'>
+                <button className='border border-purple-600 dark:border-purple-400 text-white hover:bg-white hover:text-purple-600 dark:hover:text-purple-800 px-6 py-3 rounded-xl font-semibold transition-all duration-300 whitespace-nowrap hover:scale-105'>
                   Start Your Project
                 </button>
               </div>

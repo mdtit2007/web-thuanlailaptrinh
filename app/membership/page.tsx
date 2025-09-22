@@ -1,5 +1,5 @@
 import  react from "react";
-import Membership from "../components/membership"
+import Membership from "../component/membership"
 
 
 

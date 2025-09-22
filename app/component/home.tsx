@@ -1,5 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
+import ScrollDownIndicator from './ScrollDownIndicator';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 // --- SVG ICONS (Original Logos) ---
 const HtmlIcon = ({ className }: { className?: string }) => (
@@ -124,6 +126,9 @@ const CodeDisplay = ({ isVisible }: { isVisible: boolean }) => {
 export default function Hero5() {
     const [activeTab, setActiveTab] = useState<keyof typeof iconMap>('react');
     const [isVisible, setIsVisible] = useState(false);
+    const { elementRef: heroRef, isVisible: heroVisible } = useScrollAnimation({ delay: 200 });
+    const { elementRef: codeRef, isVisible: codeVisible } = useScrollAnimation({ delay: 400 });
+    const { elementRef: buttonRef, isVisible: buttonVisible } = useScrollAnimation({ delay: 600 });
 
     useEffect(() => {
         const timer = setTimeout(() => setIsVisible(true), 100);
@@ -142,17 +147,34 @@ export default function Hero5() {
         <div className="font-sans">
             <style>{`
         @keyframes slide-up {
-          from { opacity: 0; transform: translateY(20px); }
+          from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-slide-up { animation: slide-up 0.5s ease-out forwards; }
+        @keyframes fade-in-scale {
+          from { opacity: 0; transform: translateY(20px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes bounce-gentle {
+          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-10px); }
+          60% { transform: translateY(-5px); }
+        }
+        .animate-slide-up { animation: slide-up 0.8s ease-out forwards; }
+        .animate-fade-in-scale { animation: fade-in-scale 0.6s ease-out forwards; }
+        .animate-bounce-gentle { animation: bounce-gentle 2s infinite; }
         .animation-delay-200 { animation-delay: 200ms; }
         .animation-delay-400 { animation-delay: 400ms; }
+        .animation-delay-600 { animation-delay: 600ms; }
       `}</style>
 
             <div className="min-h-screen bg-gray-50 dark:bg-black py-8 sm:py-12 px-4 transition-colors duration-300">
                 <div className="max-w-7xl mx-auto">
-                    <div className={`text-center mb-8 sm:mb-12 transition-all duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+                    <div 
+                        ref={heroRef as React.RefObject<HTMLDivElement>}
+                        className={`text-center mb-8 sm:mb-12 transition-all duration-800 ease-out ${
+                            heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                        }`}
+                    >
                         <div className="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 text-sm font-medium tracking-wide transition-colors duration-300 mb-4 sm:mb-6">
                             SETUP, EASY-PEASY!
                         </div>
@@ -179,17 +201,30 @@ export default function Hero5() {
                         </div>
                     </div>
 
-                    <div className={`mb-8 sm:mb-12 ${isVisible ? 'animate-slide-up animation-delay-200' : 'opacity-0'}`}>
-                        <CodeDisplay isVisible={isVisible} />
+                    <div 
+                        ref={codeRef as React.RefObject<HTMLDivElement>}
+                        className={`mb-8 sm:mb-12 transition-all duration-800 ease-out ${
+                            codeVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
+                        }`}
+                    >
+                        <CodeDisplay isVisible={codeVisible} />
                     </div>
 
-                    <div className={`text-center ${isVisible ? 'animate-slide-up animation-delay-400' : 'opacity-0'}`}>
+                    <div 
+                        ref={buttonRef as React.RefObject<HTMLDivElement>}
+                        className={`text-center mb-16 transition-all duration-800 ease-out ${
+                            buttonVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                        }`}
+                    >
                         <button className="group inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full font-medium text-base sm:text-lg transition-all duration-200 hover:bg-gray-800 dark:hover:bg-gray-200 hover:scale-105 hover:shadow-lg">
                             Khám Phá Ngay
                             <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200 group-hover:translate-x-1" />
                         </button>
                     </div>
                 </div>
+
+                {/* Scroll Down Indicator */}
+                <ScrollDownIndicator targetId="courses" />
             </div>
         </div>
     );

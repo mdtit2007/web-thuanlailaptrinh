@@ -12,6 +12,7 @@ import {
   MonitorPlay,
   ChevronDown,
 } from "lucide-react";
+import { useScrollAnimation, useStaggeredAnimation } from '../hooks/useScrollAnimation';
 
 // Data for the FAQ section, including icons
 const faqData = [
@@ -82,13 +83,15 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
   onToggle,
 }) => {
   return (
-    <div id="contact" className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+    <div className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
       <button
-        className="flex items-center justify-between w-full p-4 text-left focus:outline-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        className="flex items-center justify-between w-full p-4 text-left focus:outline-none hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:pl-6"
         onClick={onToggle}
       >
         <div className="flex items-center space-x-4">
-          {item.icon}
+          <div className="transition-transform duration-300 hover:scale-110">
+            {item.icon}
+          </div>
           <span className="text-base font-medium text-gray-800 dark:text-gray-200">
             {item.question}
           </span>
@@ -99,12 +102,12 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
         />
       </button>
       <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-96" : "max-h-0"
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="p-4 pl-12">
-          <p className="text-gray-600 dark:text-gray-300">{item.answer}</p>
+        <div className="p-4 pl-12 bg-gray-50 dark:bg-gray-800/50">
+          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{item.answer}</p>
         </div>
       </div>
     </div>
@@ -114,26 +117,63 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
 
 export default function AccordionSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(2); 
+  const { elementRef: titleRef, isVisible: titleVisible } = useScrollAnimation({ delay: 200 });
+  const { containerRef: accordionRef, visibleItems } = useStaggeredAnimation(faqData.length, 150);
 
   const handleToggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <div className="flex items-center justify-center">
+    <div id="contact" className="flex items-center justify-center py-20 bg-gray-50 dark:bg-gray-900">
+      <style>{`
+        @keyframes slideInFromLeft {
+          from { opacity: 0; transform: translateX(-50px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-in-left { animation: slideInFromLeft 0.8s ease-out forwards; }
+        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+      `}</style>
+      
       <div className="w-full max-w-2xl mx-auto">
         <div className="p-4">
-          <h1 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-6">
-            Câu hỏi thường gặp
-          </h1>
-          <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
+          <div 
+            ref={titleRef as React.RefObject<HTMLDivElement>}
+            className={`transition-all duration-800 ease-out ${
+              titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
+            <h1 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-6">
+              Câu hỏi thường gặp
+            </h1>
+          </div>
+          
+          <div 
+            ref={accordionRef as React.RefObject<HTMLDivElement>}
+            className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg"
+          >
             {faqData.map((item, index) => (
-              <AccordionItem
+              <div
                 key={index}
-                item={item}
-                isOpen={openIndex === index}
-                onToggle={() => handleToggle(index)}
-              />
+                className={`transition-all duration-700 ease-out ${
+                  visibleItems.has(index) 
+                    ? 'opacity-100 translate-x-0' 
+                    : 'opacity-0 -translate-x-4'
+                }`}
+                style={{
+                  transitionDelay: visibleItems.has(index) ? `${index * 100}ms` : '0ms'
+                }}
+              >
+                <AccordionItem
+                  item={item}
+                  isOpen={openIndex === index}
+                  onToggle={() => handleToggle(index)}
+                />
+              </div>
             ))}
           </div>
         </div>

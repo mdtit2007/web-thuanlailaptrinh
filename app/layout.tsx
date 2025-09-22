@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Narbar from './components/Narbar'
-import { ThemeProvider } from "./components/theme-provider"
-import Footer from "./components/Footer";
+import Narbar from './component/Narbar'
+import { ThemeProvider } from "./component/theme-provider"
+import Footer from "./component/Footer";
+import ChatBot from "./component/ChatBot";
 
 export const metadata: Metadata = {
   title: "T-Team",
@@ -26,6 +27,7 @@ export default function RootLayout({
           >  
               {children}
               <Footer />
+              <ChatBot />
           </ThemeProvider>
       </body>
     </html>
